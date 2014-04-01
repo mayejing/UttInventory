@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    
+
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Styles.Render("~/Scripts/easyui/themes/default/easyui.css")
+    @Styles.Render("~/Scripts/easyui/themes/icon.css")
+    @RenderSection("style", required: false)
+</head>
+
+<body>
+    <header>
+    </header>
+    PHONEPHONEPHONEPHONEPHONE
+    <div id="body">
+        @RenderSection("featured", required: false)
+        <section class="content-wrapper main-content clear-fix">
+            @RenderBody()
+        </section>
+    </div>
+    <footer>
+        <div class="content-wrapper">
+            <div class="float-left">
+                <p>&copy; @DateTime.Now.Year - Utt Product Inventory Manager</p>
+            </div>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/easyui/jquery.easyui.min.js")
+    @RenderSection("scripts", required: false)
+
+
+</body>
+</html>

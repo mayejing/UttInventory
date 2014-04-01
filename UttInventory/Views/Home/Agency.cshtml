@@ -1,0 +1,79 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Agency</title>
+
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Styles.Render("~/Scripts/easyui/themes/default/easyui.css")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/easyui/jquery.easyui.min.js")
+    @Styles.Render("~/Scripts/easyui/themes/icon.css")
+    <style>
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+        .easyui-textbox {
+            width:150px;
+        }
+    </style>
+</head>
+<body>
+    @using System.Data;
+    @{
+        DataRow dr = ViewBag.Agency;
+    }
+    <div class="easyui-panel" style="padding: 10px;" data-options="fit:true,border:false">
+        <form id="ff" method="post">
+            <table>
+                <tr>
+                    <td>经销商号:</td>
+                    <td>
+                        <input class="easyui-textbox" name="AgencyId" type="text" readonly="readonly" id="AgencyId" value="@dr["AgencyId"].ToString()" /></td>
+                </tr>
+                <tr>
+                    <td>经销商名:</td>
+                    <td>
+                        <input class="easyui-textbox" name="AgencyName"  type="text" id="AgencyName" value="@dr["AgencyName"].ToString()" /></td>
+                </tr>
+                <tr style="display: none;">
+                    <td>序号:</td>
+                    <td>
+                        <input class="easyui-numberspinner" name="Seq" id="Seq" data-options="min:0,max:1000,required:true" value="@dr["Seq"].ToString()" />
+                </tr>
+                <tr>
+                    <td>状态(1=启用,0=停用):</td>
+                    <td>
+                        <input class="easyui-textbox" name="Status" id="Status" value="@dr["Status"].ToString()" />
+                </tr>
+                <tr style="display: none;">
+                    <td>编辑状态:</td>
+                    <td>
+                        <input class="easyui-textbox" name="Mode" type="text"  readonly="readonly" id="Mode" value="@ViewBag.Mode" /></td>
+                </tr>
+                <tr style="display: none;">
+                    <td>AreaId:</td>
+                    <td>
+                        <input class="easyui-textbox" name="AreaId" type="text"  readonly="readonly" id="AreaId" value="@dr["AreaId"].ToString()" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <a href="#" id="sub" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="$('#ff').form('submit');">提交</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

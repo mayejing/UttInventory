@@ -1,0 +1,277 @@
+﻿@{
+    //ViewBag.Title = "Utt经销商库存管理";
+}
+@using System.Data;
+
+@section style{
+    <style>
+        .icon-filter {
+            background: url('/Scripts/easyui/filter.png') no-repeat center center;
+        }
+    </style>
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>@ViewBag.Title</h1>
+            </hgroup>
+
+        </div>
+    </section>
+}
+
+@section scripts{
+    @Scripts.Render("~/Scripts/easyui/datagrid-filter.js")
+    <script>
+        $(document).ready(function () {
+            var jarea = loadArea();
+
+            $('#AreaTree').tree({
+                data: jarea,
+                onClick: function (node) {
+                    InitAgency(node.id);
+                }
+            });
+            $('#ProductGrid').datagrid({});
+            //$("#ProductGrid").hide();
+
+            //$('#ProductGrid').datagrid({ filterBtnIconCls: 'icon-filter' });
+
+            //$('#ProductGrid').datagrid('enableFilter');
+        });
+
+        function loadArea() {
+            var json;
+            $.ajax({
+                dataType: "json",
+                url: "/api/Area/Get",
+                type: 'GET',
+                cache: false,
+                async: false,
+                success: function (d) {
+                    json = $.parseJSON(d)
+                }
+            }).fail(
+            function (xhr, textStatus, err) {
+                alert('Error: ' + err);
+            });
+            return json;
+        }
+
+        function InitAgency(id) {
+            var json;
+            $.ajax({
+                dataType: "json",
+                url: "/api/Agency/Get",
+                data: "id=" + id,
+                type: 'GET',
+                cache: false,
+                async: false,
+                success: function (d) {
+                    json = $.parseJSON(d)
+                }
+            }).fail(
+            function (xhr, textStatus, err) {
+                alert('Error: ' + err);
+            });
+
+            $('#AgencyTree').tree({
+                data: json,
+                onClick: function (node) {
+                    InitProduct(node.id, "");
+                }
+            });
+
+            if (json == null) {
+                $('#AgencyTree').tree('loadData', { total: 0, rows: [] });
+                $('#ProductGrid').datagrid('loadData', { total: 0, rows: [] });
+            }
+        }
+
+        function InitProduct(id, name) {
+            var json;
+            $.ajax({
+                dataType: "json",
+                url: "/api/Product/GetList",
+                data: "id=" + id,
+                type: 'GET',
+                cache: false,
+                async: false,
+                success: function (d) {
+                    json = $.parseJSON(d);
+                }
+            }).fail(
+            function (xhr, textStatus, err) {
+                alert('Error: ' + err);
+            });
+
+            //$('#ProductGrid').datagrid('enableFilter');
+            $("#ProductGrid").show();
+
+            $('#ProductGrid').datagrid({
+                data: json,
+                onDblClickRow: function (rowIndex, rowData) {
+                    UpdateInventory(rowData.ProductId, rowData.ProductName);
+                }
+            });
+
+            if (json == null) {
+                $('#ProductGrid').datagrid('loadData', { total: 0, rows: [] });
+            }
+        }
+
+        function UpdateInventory(ProductId, ProductName) {
+            WindowOpen("winAdjustProduct", '/Inventory/Adjust/?ProductId=' + ProductId + '&Mode=ADD', "产品可用库存更新 - " + ProductName);
+        }
+
+        function ProductReload(id) {
+            //$("#ProductGrid").datagrid('reload');
+            $('#' + id).window('close');
+            var AgencyTree = $('#AgencyTree').tree('getSelected');
+            InitProduct(AgencyTree.id, "");
+        }
+
+        function WindowOpen(id, url, title) {
+            $('#' + id).window({
+                title: title,
+                closed: false,
+                cache: false,
+                modal: true
+            });
+            var con = '<iframe style="width:99%;height:99%;border:0;overflow:hidden;" src='
+                + url + '></iframe>';
+            $('#' + id).html(con);
+        }
+
+        function addArea() {
+            WindowOpen("winArea", '/Home/Area/?AreaId=&Mode=ADD', "区域添加");
+        }
+
+        function editArea() {
+            var AreaTree = $('#AreaTree').tree('getSelected');
+
+            if (AreaTree != null) {
+                WindowOpen("winArea", '/Home/Area/?AreaId=' + AreaTree.id + '&Mode=Edit', "区域编辑 - " + AreaTree.text);
+            }
+        }
+
+        function AreaReload() {
+            location.href = location.href;
+        }
+
+
+        function addAgency() {
+            var AreaTree = $('#AreaTree').tree('getSelected');
+            if (AreaTree != null) {
+                WindowOpen("winAgency", '/Home/Agency/?AgencyId=&Mode=ADD&AreaId=' + AreaTree.id, "经销商添加 - " + AreaTree.text);
+            }
+        }
+
+        function editAgency() {
+            var AgencyTree = $('#AgencyTree').tree('getSelected');
+            var AreaTree = $('#AreaTree').tree('getSelected');
+
+            if (AgencyTree != null) {
+                WindowOpen("winAgency", '/Home/Agency/?AgencyId=' + AgencyTree.id + '&Mode=Edit&AreaId=' + AreaTree.id, "经销商编辑 - " + AreaTree.text + " - " + AgencyTree.text);
+            }
+        }
+
+        function AgencyReload() {
+            $('#winAgency').window('close');
+            var AreaTree = $('#AreaTree').tree('getSelected');
+
+            InitAgency(AreaTree.id);
+            $('#ProductGrid').datagrid('loadData', { total: 0, rows: [] });
+        }
+
+
+        function addProduct() {
+            var AgencyTree = $('#AgencyTree').tree('getSelected');
+            if (AgencyTree != null) {
+                WindowOpen("winProduct", '/Home/Product/?ProductId=&Mode=ADD&AgencyId=' + AgencyTree.id, "产品添加 - " + AgencyTree.text);
+            }
+        }
+
+        function editProduct() {
+            var ProductRow = $('#ProductGrid').datagrid('getSelected');
+            var AgencyTree = $('#AgencyTree').tree('getSelected');
+
+            if (AgencyTree != null) {
+                WindowOpen("winProduct", '/Home/Product/?ProductId=' + ProductRow.ProductId + '&Mode=Edit&AgencyId=' + AgencyTree.id, "产品编辑 - " + AgencyTree.text + " - " + ProductRow.ProductName);
+            }
+        }
+
+    </script>
+}
+<div>
+</div>
+
+<div class="easyui-layout" style="width: 900px; height: 350px;">
+    <div data-options="region:'east',split:true,collapsible:false,collapsible:false,tools:[{
+                    iconCls:'icon-add',
+                    handler:function(){
+                        addProduct();
+                    }},{
+                    iconCls:'icon-edit',
+                    handler:function(){
+                        editProduct();
+                    }
+                }]" title="产品" style="width: 550px;">
+        <table id="ProductGrid" style="width: 500px; height: 250px"
+            data-options="rownumbers:true,singleSelect:true,fit:true,border:false">
+            <thead>
+                <tr>
+                    <th data-options="field:'ProductId',width:50">产品号</th>
+                    <th data-options="field:'ProductTypeName',width:100">产品系列</th>
+                    <th data-options="field:'ProductName',width:100">产品名称</th>
+                    <th data-options="field:'QtyAvailable',width:80,align:'right'">可用库存数量</th>
+                    <th data-options="field:'QtyAvailableUpdatedDate',width:150,align:'right'">最后更新时间</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div data-options="region:'west',split:true,collapsible:false,tools:[{
+                    iconCls:'icon-add',
+                    handler:function(){
+                        addArea();
+                    }},{
+                    iconCls:'icon-edit',
+                    handler:function(){
+                        editArea();
+                    }
+                }]"
+        title="区域" style="width: 150px; padding: 5px;">
+        <ul id="AreaTree" class="easyui-tree">
+        </ul>
+    </div>
+    <div data-options="region:'center',title:'经销商',collapsible:false,tools:[{
+                    iconCls:'icon-add',
+                    handler:function(){
+                        addAgency();
+                    }},{
+                    iconCls:'icon-edit',
+                    handler:function(){
+                        editAgency();
+                    }
+                }]" style="padding: 5px;">
+        <ul id="AgencyTree" class="easyui-tree">
+        </ul>
+    </div>
+</div>
+
+<div id="winAdjustProduct" class="easyui-window" style="width: 350px; height: 350px"
+    data-options="closed:true">
+</div>
+
+<div id="winArea" class="easyui-window" style="width: 350px; height: 300px"
+    data-options="closed:true">
+</div>
+
+<div id="winAgency" class="easyui-window" style="width: 350px; height: 300px"
+    data-options="closed:true">
+</div>
+
+<div id="winProduct" class="easyui-window" style="width: 350px; height: 350px"
+    data-options="closed:true">
+</div>

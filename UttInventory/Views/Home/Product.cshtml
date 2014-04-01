@@ -1,0 +1,107 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Product</title>
+
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Styles.Render("~/Scripts/easyui/themes/default/easyui.css")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/easyui/jquery.easyui.min.js")
+    @Styles.Render("~/Scripts/easyui/themes/icon.css")
+    <style>
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        .easyui-textbox, .easyui-combobox {
+            width: 150px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var json;
+            $.ajax({
+                dataType: "json",
+                url: "/api/Product/GetTypeList",
+                type: 'GET',
+                cache: false,
+                async: false,
+                success: function (d) {
+                    json = $.parseJSON(d)
+                }
+            }).fail(
+            function (xhr, textStatus, err) {
+                alert('Error: ' + err);
+            });
+            //需要不可输入
+            $('#ProductType').combobox({ data: json, required: true, onselect: true, editable: false });
+
+        });
+    </script>
+</head>
+<body>
+    @using System.Data;
+    @{
+        DataRow dr = ViewBag.Product;
+    }
+    <div class="easyui-panel" style="padding: 10px;" data-options="fit:true,border:false">
+        <form id="ff" method="post">
+            <table>
+                <tr>
+                    <td>产品号:</td>
+                    <td>
+                        <input class="easyui-textbox" name="ProductId" type="text" readonly="readonly" id="ProductId" value="@dr["ProductId"].ToString()" /></td>
+                </tr>
+                <tr>
+                    <td>产品系列:</td>
+                    <td>
+                        <input class="easyui-combobox" id="ProductType" name="ProductType"
+                            data-options="valueField:'id',textField:'text'"/ value="@dr["ProductType"].ToString()">
+                </tr>
+                <tr>
+                    <td>产品名称:</td>
+                    <td>
+                        <input class="easyui-textbox" name="ProductName"   type="text" id="ProductName" value="@dr["ProductName"].ToString()" /></td>
+                </tr>
+                <tr>
+                    <td>可用库存数量:</td>
+                    <td>
+                        <input class="easyui-textbox" name="QtyAvailable"  readonly="readonly" type="text" id="QtyAvailable" value="@dr["QtyAvailable"].ToString()" value="0"/></td>
+                </tr>
+                <tr>
+                    <td>状态(1=启用,0=停用):</td>
+                    <td>
+                        <input class="easyui-textbox" name="Status" id="Status" value="@dr["Status"].ToString()" />
+                </tr>
+                <tr style="display: none;">
+                    <td>调整状态:</td>
+                    <td>
+                        <input class="easyui-textbox" name="Mode" type="text"  readonly="readonly" id="Mode" value="@ViewBag.Mode" /></td>
+                </tr>
+                <tr style="display: none;">
+                    <td>AgencyId:</td>
+                    <td>
+                        <input class="easyui-textbox" name="AgencyId" type="text"  readonly="readonly" id="AgencyId" value="@dr["AgencyId"].ToString()" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <a href="#" id="sub" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="$('#ff').form('submit');">提交</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
