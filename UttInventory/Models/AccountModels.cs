@@ -22,7 +22,7 @@ namespace UttInventory.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new123132 password and confirmation password do not match.")]
+        [Compare("NewPassword", ErrorMessage = "The new123132 pas123123sword and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 
