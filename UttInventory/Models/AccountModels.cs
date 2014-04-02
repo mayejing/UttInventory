@@ -22,14 +22,14 @@ namespace UttInventory.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new123132 pas123123sword and confirmation password do not match.")]
+        [Compare("NewPassword", ErrorMessage = "The new123132 pas123123asdasdsword and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 
     public class LoginModel
     {
         [Required]
-        [Display(Name = "User name")]
+        [Display(Name = "User namaeqw123e")]
         public string UserName { get; set; }
 
         [Required]
