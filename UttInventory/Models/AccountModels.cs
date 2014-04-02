@@ -11,7 +11,7 @@ namespace UttInventory.Models
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Current password123")]
+        [Display(Name = "Current password123zxczx")]
         public string OldPassword { get; set; }
 
         [Required]
